@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singleton Storage System Architecture</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .diagram-section {
+            margin-bottom: 50px;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        /* File System Structure */
+        .filesystem {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .file-tree {
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            line-height: 1.8;
+        }
+        
+        .file-item {
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .file-item:before {
+            content: "📁";
+            position: absolute;
+            left: 0;
+        }
+        
+        .file-item.file:before {
+            content: "📄";
+        }
+        
+        /* Singleton Class */
+        .singleton {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .class-box {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .method-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .method-list li {
+            background: rgba(255,255,255,0.2);
+            margin: 8px 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #fff;
+        }
+        
+        /* Data Flow */
+        .dataflow {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #2c3e50;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .flow-step {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .flow-step:hover {
+            transform: translateY(-10px);
+        }
+        
+        .flow-step:not(:last-child):after {
+            content: "→";
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        
+        .step-number {
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+        }
+        
+        /* Memory State */
+        .memory {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+        }
+        
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .memory-item {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .memory-title {
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        /* Checkpoint Process */
+        .checkpoints {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #2c3e50;
+        }
+        
+        .checkpoint-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .checkpoint-step {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .checkpoint-icon {
+            width: 40px;
+            height: 40px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Interactive Elements */
+        .interactive-demo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .demo-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .demo-button:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .demo-output {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            text-align: left;
+            backdrop-filter: blur(10px);
+            min-height: 100px;
+        }
+        
+        @media (max-width: 768px) {
+            .flow-diagram {
+                flex-direction: column;
+            }
+            
+            .flow-step:not(:last-child):after {
+                content: "↓";
+                right: 50%;
+                top: auto;
+                bottom: -30px;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Singleton Storage System Architecture</h1>
+        
+        <!-- File System Structure -->
+        <div class="diagram-section filesystem">
+            <div class="section-title">📁 File System Structure</div>
+            <div class="file-tree">
+                <div class="file-item">project_root/</div>
+                <div class="file-item" style="margin-left: 20px;">storage_folder_999_semantic_id/</div>
+                <div class="file-item file" style="margin-left: 40px;">main.yaml</div>
+                <div class="file-item file" style="margin-left: 40px;">shared_storage.yaml</div>
+                <div class="file-item file" style="margin-left: 40px;">file_tree.yaml</div>
+                <div class="file-item file" style="margin-left: 40px;">tiny_db.json</div>
+                <div class="file-item" style="margin-left: 40px;">old_yamls/</div>
+                <div class="file-item" style="margin-left: 40px;">files/</div>
+                <div class="file-item file" style="margin-left: 60px;">model_checkpoint_1.pkl</div>
+                <div class="file-item file" style="margin-left: 60px;">logs_checkpoint_1.pkl</div>
+                <div class="file-item file" style="margin-left: 60px;">additional_data_checkpoint_2.pkl</div>
+                <div class="file-item" style="margin-left: 40px;">model_backups/</div>
+            </div>
+        </div>
+        
+        <!-- Singleton Class -->
+        <div class="diagram-section singleton">
+            <div class="section-title">🔒 SharedStorage Singleton Class</div>
+            <div class="class-box">
+                <h3>Key Methods:</h3>
+                <ul class="method-list">
+                    <li><strong>initial_setup()</strong> - Initialize storage structure</li>
+                    <li><strong>setup_checkpoint_N()</strong> - Prepare checkpoint state</li>
+                    <li><strong>save_checkpoint_N()</strong> - Save objects to files</li>
+                    <li><strong>load_checkpoint_N()</strong> - Load objects from files</li>
+                    <li><strong>save_object_to_file()</strong> - Generic object saving</li>
+                    <li><strong>backup_model_weights()</strong> - Prevent duplicate backups</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Data Flow -->
+        <div class="diagram-section dataflow">
+            <div class="section-title">🔄 Data Flow Process</div>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <strong>Initialize</strong><br>
+                    Call initial_setup()
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <strong>Setup Checkpoint</strong><br>
+                    Prepare state structure
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <strong>Object Preparation</strong><br>
+                    Objects call prepare_for_save()
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <strong>Save Checkpoint</strong><br>
+                    All saves in one operation
+                </div>
+            </div>
+        </div>
+        
+        <!-- Memory State -->
+        <div class="diagram-section memory">
+            <div class="section-title">🧠 In-Memory State Management</div>
+            <div class="memory-grid">
+                <div class="memory-item">
+                    <div class="memory-title">main_data</div>
+                    Loaded from main.yaml<br>
+                    Contains process stage info
+                </div>
+                <div class="memory-item">
+                    <div class="memory-title">shared_storage_data</div>
+                    Loaded from shared_storage.yaml<br>
+                    Tracks current model weights, last checkpoint
+                </div>
+                <div class="memory-item">
+                    <div class="memory-title">file_tree_data</div>
+                    Loaded from file_tree.yaml<br>
+                    Maps file structure and metadata
+                </div>
+                <div class="memory-item">
+                    <div class="memory-title">tiny_db_data</div>
+                    Loaded from tiny_db.json<br>
+                    Stores checkpoint information
+                </div>
+            </div>
+        </div>
+        
+        <!-- Checkpoint Process -->
+        <div class="diagram-section checkpoints">
+            <div class="section-title">✅ Checkpoint Lifecycle</div>
+            <div class="checkpoint-flow">
+                <div class="checkpoint-step">
+                    <div class="checkpoint-icon">🎯</div>
+                    <div>
+                        <strong>Setup Phase:</strong> Initialize checkpoint structure, update metadata
+                    </div>
+                </div>
+                <div class="checkpoint-step">
+                    <div class="checkpoint-icon">📦</div>
+                    <div>
+                        <strong>Object Preparation:</strong> Objects mark themselves as ready for saving
+                    </div>
+                </div>
+                <div class="checkpoint-step">
+                    <div class="checkpoint-icon">💾</div>
+                    <div>
+                        <strong>Bulk Save:</strong> All files saved in single operation, paths managed centrally
+                    </div>
+                </div>
+                <div class="checkpoint-step">
+                    <div class="checkpoint-icon">📊</div>
+                    <div>
+                        <strong>State Update:</strong> File tree, shared storage, and tiny DB updated
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interactive Demo -->
+        <div class="diagram-section interactive-demo">
+            <div class="section-title">🎮 Interactive Demo</div>
+            <p>Click buttons to simulate the storage system workflow:</p>
+            
+            <button class="demo-button" onclick="simulateInit()">Initialize Storage</button>
+            <button class="demo-button" onclick="simulateCheckpoint()">Setup Checkpoint</button>
+            <button class="demo-button" onclick="simulateSave()">Save Objects</button>
+            <button class="demo-button" onclick="simulateLoad()">Load Data</button>
+            <button class="demo-button" onclick="showState()">Show State</button>
+            
+            <div class="demo-output" id="demo-output">
+                Click buttons above to see the storage system in action...
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let storageState = {
+            initialized: false,
+            checkpointSetup: false,
+            objectsSaved: false,
+            currentCheckpoint: 0,
+            files: [],
+            memory: {
+                main_data: {},
+                shared_storage_data: {},
+                file_tree_data: {},
+                tiny_db_data: {}
+            }
+        };
+        
+        function updateOutput(message) {
+            const output = document.getElementById('demo-output');
+            output.innerHTML += message + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function simulateInit() {
+            updateOutput('🚀 Initializing storage system...');
+            updateOutput('📁 Creating folder: storage_folder_999_demo_process/');
+            updateOutput('📄 Creating: main.yaml, shared_storage.yaml, file_tree.yaml, tiny_db.json');
+            updateOutput('📂 Creating folders: old_yamls/, files/, model_backups/');
+            updateOutput('🧠 Loading YAML files into memory...');
+            
+            storageState.initialized = true;
+            storageState.memory.shared_storage_data = {
+                created_at: new Date().toISOString(),
+                last_checkpoint: null,
+                current_model_weights: null
+            };
+            
+            updateOutput('✅ Storage system initialized!\n');
+        }
+        
+        function simulateCheckpoint() {
+            if (!storageState.initialized) {
+                updateOutput('❌ Error: Initialize storage first!\n');
+                return;
+            }
+            
+            storageState.currentCheckpoint++;
+            updateOutput(`🎯 Setting up checkpoint ${storageState.currentCheckpoint}...`);
+            updateOutput('📝 Updating main_data with checkpoint info');
+            updateOutput('💾 Saving main.yaml');
+            updateOutput('🔄 Updating shared_storage metadata');
+            
+            storageState.checkpointSetup = true;
+            storageState.memory.main_data[`checkpoint_${storageState.currentCheckpoint}_setup_at`] = new Date().toISOString();
+            storageState.memory.shared_storage_data.last_checkpoint = `checkpoint_${storageState.currentCheckpoint}`;
+            
+            updateOutput(`✅ Checkpoint ${storageState.currentCheckpoint} setup complete!\n`);
+        }
+        
+        function simulateSave() {
+            if (!storageState.checkpointSetup) {
+                updateOutput('❌ Error: Setup checkpoint first!\n');
+                return;
+            }
+            
+            updateOutput(`💾 Saving checkpoint ${storageState.currentCheckpoint}...`);
+            updateOutput('🔧 Objects calling prepare_for_save()...');
+            updateOutput('📦 Saving model_state to model_checkpoint_' + storageState.currentCheckpoint + '.pkl');
+            updateOutput('📊 Saving logs to logs_checkpoint_' + storageState.currentCheckpoint + '.pkl');
+            updateOutput('🗂️ Updating file_tree.yaml with new file info');
+            updateOutput('🗃️ Updating tiny_db.json with checkpoint data');
+            
+            storageState.objectsSaved = true;
+            storageState.files.push(`model_checkpoint_${storageState.currentCheckpoint}.pkl`);
+            storageState.files.push(`logs_checkpoint_${storageState.currentCheckpoint}.pkl`);
+            
+            storageState.memory.tiny_db_data[`checkpoint_${storageState.currentCheckpoint}`] = {
+                saved_at: new Date().toISOString(),
+                checkpoint: storageState.currentCheckpoint
+            };
+            
+            updateOutput(`✅ Checkpoint ${storageState.currentCheckpoint} saved successfully!\n`);
+        }
+        
+        function simulateLoad() {
+            if (!storageState.objectsSaved) {
+                updateOutput('❌ Error: Save some data first!\n');
+                return;
+            }
+            
+            updateOutput(`📖 Loading checkpoint ${storageState.currentCheckpoint}...`);
+            updateOutput('🔍 Reading checkpoint info from tiny_db_data');
+            updateOutput('📦 Loading model_checkpoint_' + storageState.currentCheckpoint + '.pkl');
+            updateOutput('📊 Loading logs_checkpoint_' + storageState.currentCheckpoint + '.pkl');
+            updateOutput('✅ Data loaded successfully!');
+            updateOutput('🎯 Model epoch: 10, Loss: 0.25, Accuracy: 0.92\n');
+        }
+        
+        function showState() {
+            updateOutput('📊 CURRENT STORAGE STATE:');
+            updateOutput('├── Initialized: ' + storageState.initialized);
+            updateOutput('├── Current Checkpoint: ' + storageState.currentCheckpoint);
+            updateOutput('├── Files Saved: ' + storageState.files.length);
+            updateOutput('├── Last Checkpoint: ' + (storageState.memory.shared_storage_data.last_checkpoint || 'None'));
+            updateOutput('└── Memory Objects: ' + Object.keys(storageState.memory).length);
+            updateOutput('\n📁 Files in storage:');
+            storageState.files.forEach(file => {
+                updateOutput('   📄 ' + file);
+            });
+            updateOutput('');
+        }
+    </script>
+</body>
+</html>

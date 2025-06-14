@@ -1,0 +1,47 @@
+
+
+
+
+
+
+I will give you an example storage singleton code that i waaay too confusing.
+(shared_storage4.py)
+
+
+The imports are correct tho, so use them
+
+I want you to make a simple demo, where you make a singleton object, which has attributes for the availabel paths to storage places, including things like:
+files/graphs/
+files/test_showcase_images/
+
+I want to have only 1 setup(), 1 load(), and 1 save()
+
+I do not want to have many phases like in the provided code.
+
+I want to keep the TrainingLogs object and use it.
+
+I want to make ModelWrapper which has the model as its attribute.
+
+I want to use:
+files/backups/weights to backup model weights with the imported fn for backups
+
+Semantically, what we are doing is this:
+
+When process starts, we do setup using the setup fn as in the provided code (set up our main file storage directory if it doesn't exist yet)
+
+In the singleton setup() we should also load the contents of the yamls in the project.
+
+Next, we do load()
+It loads the TrainingLogs object into a singleton's attribute.
+It also loads the ModelWrapper into a singleton's attribute
+
+We then do training
+
+And then we do save()
+Where we save TrainingLogs
+Save ModelWrapper
+On both occasions a singleton's fn called file_tree_manage(path, remove=False) which updates the singletons dict that was loaded from file_tree.yaml
+We write what the latest TrainingLogs and ModelWrapper were to the singleton's dict of main.yaml
+And then we also save our yaml dicts to their yaml files
+
+I want you to never write anything to tiny_db.json. That file should remain empty because it is not used in this project.

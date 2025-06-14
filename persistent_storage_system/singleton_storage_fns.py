@@ -57,7 +57,7 @@ def main(path_to_storage, path_is_only_to_container=False, semantic_id_of_proc="
 
     """
 
-    path_to_storage = Path(path_to_storage).resolve()
+    path_to_storage = Path(path_to_storage)
 
     if not path_is_only_to_container:
         # if we got a full path to the storage folder, we check if it exists
