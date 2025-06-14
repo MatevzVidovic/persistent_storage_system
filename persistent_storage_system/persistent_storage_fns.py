@@ -23,7 +23,7 @@ from persistent_storage_system.helpers_storage import novel_start_of_folder
 import persistent_storage_system.yaml_handler as yh
 import persistent_storage_system.json_handler as jh
 
-class NamesInStorage():
+class SetupNames():
     """
     So intellisence can suggest and check if what you wrote in your code is correct.
     Because working with pure strings is honestly a bit unnerving to me.
@@ -105,28 +105,28 @@ def setup(path_to_novel_storage_folder):
         # - symlink_tree/
         # - write_only_tree/
     
-    nis = NamesInStorage()
+    sn = SetupNames()
     
-    main_yaml_path = novel_folder_path / nis.MAIN_YAML
+    main_yaml_path = novel_folder_path / sn.MAIN_YAML
     if not osp.exists(main_yaml_path):
         # create main.yaml
         yh.write_yaml({}, main_yaml_path)
 
-    tiny_db_path = novel_folder_path / nis.TINY_DB_JSON
+    tiny_db_path = novel_folder_path / sn.TINY_DB_JSON
     if not osp.exists(tiny_db_path):
         # create tiny_db.json
         jh.write_json({}, tiny_db_path)
     
-    old_yamls_path = novel_folder_path / nis.OLD_YAMLS_FOLDER
+    old_yamls_path = novel_folder_path / sn.OLD_YAMLS_FOLDER
     os.makedirs(old_yamls_path, exist_ok=True)
 
-    pickles_and_such_path = novel_folder_path / nis.PICKLES_AND_SUCH_FOLDER
+    pickles_and_such_path = novel_folder_path / sn.PICKLES_AND_SUCH_FOLDER
     os.makedirs(pickles_and_such_path, exist_ok=True)
 
-    symlink_tree_path = novel_folder_path / nis.SYMLINK_TREE_FOLDER
+    symlink_tree_path = novel_folder_path / sn.SYMLINK_TREE_FOLDER
     os.makedirs(symlink_tree_path, exist_ok=True)
 
-    write_only_tree_path = novel_folder_path / nis.WRITE_ONLY_TREE_FOLDER
+    write_only_tree_path = novel_folder_path / sn.WRITE_ONLY_TREE_FOLDER
     os.makedirs(write_only_tree_path, exist_ok=True)
 
     # return path to the novel folder we made

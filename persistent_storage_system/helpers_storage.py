@@ -66,17 +66,19 @@ def novel_filename(path_to_parent_folder, filename="", suffix=""):
 
     prefix = "" # will be k*"#" if overflow
     counter=999
+
+    ptp = Path(path_to_parent_folder)
+    os.makedirs(ptp, exist_ok=True)
     
-    filepath = Path(path_to_parent_folder) / f"{filename}_{prefix}{counter}"
+    filepath = ptp / f"{filename}_{prefix}{counter}{suffix}"
     while osp.exists(filepath):
         counter -= 1
-        filepath = Path(path_to_parent_folder) / f"{filename}_{prefix}{counter}"
+        filepath = ptp / f"{filename}_{prefix}{counter}{suffix}"
 
         if counter <= 100:
             prefix += "#"
             counter = 999
 
-    os.makedirs(filepath, exist_ok=True)
     return Path(filepath)
 
 
@@ -149,11 +151,16 @@ def get_no_overwrite_path(file_path_no_suffix, suffix="", make_folders_on_path=T
     if file_path != old_file_path:
         print(f"File {old_file_path} already exists. We made {file_path} instead.")
     """
+    path_to_parent_folder = Path(file_path_no_suffix).parent
+    if make_folders_on_path:
+        os.makedirs(path_to_parent_folder, exist_ok=True)
 
     file_path = file_path_no_suffix + suffix
     old_file_path = file_path
 
     if osp.exists(file_path):
+        if warn_if_already_exists:
+            print(f"File {old_file_path} already exists. We will make a new file instead.")
         add_id = 1
         file_path = file_path_no_suffix + f"_{add_id}{suffix}"
         while osp.exists(file_path):
